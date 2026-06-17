@@ -1,0 +1,27 @@
+services:
+  chtodata:
+    build: .
+    image: chtodata:latest
+    container_name: chtodata
+    ports:
+      - "8000:8000"
+    volumes:
+      # Персистентность базы (registry.db) между перезапусками.
+      - ./data:/app/data
+    environment:
+      # Автообновление базы Минцифры (раз в неделю по умолчанию).
+      CHTODATA_UPDATE_ENABLED: "true"
+      CHTODATA_UPDATE_INTERVAL_DAYS: "7"
+      CHTODATA_LOG_LEVEL: "INFO"
+      # Канонический адрес сайта для SEO/OpenGraph (укажите свой домен):
+      # CHTODATA_SITE_URL: "https://chtodata.ru"
+      # Раскомментируйте, чтобы включить ручное обновление через POST /api/admin/refresh:
+      # CHTODATA_ADMIN_TOKEN: "change-me"
+    # Перезапуск при сбоях и после перезагрузки VPS.
+    restart: unless-stopped
+    # Ротация логов, чтобы они не заполнили диск за год работы.
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"

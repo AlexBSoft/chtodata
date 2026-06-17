@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Сгенерированная база и временные файлы
+data/registry.db
+data/registry.db.tmp
+data/*.tmp
+data/_download/
+
+# Большие исходные CSV Минцифры (скачиваются/обновляются автоматически)
+data/mincifry-phones/
+data/**/*.csv
+*.csv
+
+# IDE / ОС
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.log

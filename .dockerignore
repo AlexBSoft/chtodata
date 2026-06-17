@@ -1,0 +1,22 @@
+.git
+.gitignore
+.venv
+venv
+env
+__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.idea
+.vscode
+
+# Не копируем в образ: база собирается на старте, CSV скачиваются/монтируются
+data/registry.db
+data/registry.db.tmp
+data/_download/
+data/mincifry-phones/
+
+tests/
+*.md
+!README.md

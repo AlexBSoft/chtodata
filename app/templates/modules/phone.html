@@ -1,0 +1,83 @@
+<h2>Модуль «Телефоны»</h2>
+
+<div class="card">
+    <span class="method">POST</span><span class="path">/api/v1/clean/phone</span>
+    <p class="note" style="margin-bottom:0">
+        Тело запроса — JSON-массив строк. Ответ — JSON-массив объектов в том же порядке.
+        Авторизация не требуется. Формат ответа совместим с DaData.
+        {% if phone and phone.rows %}<br>Записей в реестре Минцифры: <b>{{ "{:,}".format(phone.rows).replace(",", " ") }}</b>{% endif %}
+    </p>
+</div>
+
+<h3>Пример запроса</h3>
+{% raw %}
+<pre>curl -X POST https://chtodata.ru/api/v1/clean/phone \
+     -H "Content-Type: application/json" \
+     -d '["раб 846)231.60.14 *139"]'</pre>
+{% endraw %}
+
+<h3>Пример ответа</h3>
+{% raw %}
+<pre>[
+  {
+    "source": "раб 846)231.60.14 *139",
+    "type": "Стационарный",
+    "phone": "+7 846 231-60-14 доб. 139",
+    "country_code": "7",
+    "city_code": "846",
+    "number": "2316014",
+    "extension": "139",
+    "provider": "ООО \"СИПАУТНЭТ\"",
+    "country": "Россия",
+    "country_iso": "ru",
+    "region": "Самарская область",
+    "city": "Самара",
+    "timezone": "UTC+4",
+    "qc_conflict": 0,
+    "qc": 0
+  }
+]</pre>
+{% endraw %}
+
+<h3>Поля ответа</h3>
+<table>
+    <tr><th>Поле</th><th>Описание</th></tr>
+    <tr><td><code>source</code></td><td>Исходная строка, как пришла на вход.</td></tr>
+    <tr><td><code>type</code></td><td>Тип номера: «Мобильный», «Стационарный», «Бесплатный» и т.п.</td></tr>
+    <tr><td><code>phone</code></td><td>Нормализованный номер, напр. <code>+7 846 231-60-14 доб. 139</code>.</td></tr>
+    <tr><td><code>country_code</code></td><td>Код страны, напр. <code>7</code>.</td></tr>
+    <tr><td><code>city_code</code></td><td>Код города / DEF-код, напр. <code>846</code>.</td></tr>
+    <tr><td><code>number</code></td><td>Локальный номер без кода города.</td></tr>
+    <tr><td><code>extension</code></td><td>Добавочный номер (если есть).</td></tr>
+    <tr><td><code>provider</code></td><td>Оператор связи (из реестра Минцифры).</td></tr>
+    <tr><td><code>country</code></td><td>Страна, напр. «Россия», «Казахстан», «Соединенные Штаты».</td></tr>
+    <tr><td><code>country_iso</code></td><td>Двухбуквенный код страны ISO 3166-1, напр. <code>ru</code>, <code>us</code>, <code>kz</code>.</td></tr>
+    <tr><td><code>region</code></td><td>Регион / субъект РФ (для зарубежных номеров пусто).</td></tr>
+    <tr><td><code>city</code></td><td>Город / населённый пункт.</td></tr>
+    <tr><td><code>timezone</code></td><td>Часовой пояс, напр. <code>UTC+4</code>.</td></tr>
+    <tr><td><code>qc_conflict</code></td><td>Код конфликта данных (всегда <code>0</code> в текущей версии).</td></tr>
+    <tr><td><code>qc</code></td><td>Код качества разбора (см. ниже).</td></tr>
+</table>
+
+<h3>Коды качества (qc)</h3>
+<table>
+    <tr><th>Код</th><th>Значение</th></tr>
+    <tr><td><code>0</code></td><td>Телефон распознан.</td></tr>
+    <tr><td><code>1</code></td><td>Телефон не распознан (пустая строка или непохоже на номер).</td></tr>
+</table>
+
+<h3>Служебные эндпоинты</h3>
+<table>
+    <tr><th>Метод и путь</th><th>Назначение</th></tr>
+    <tr><td><span class="method">GET</span> <code>/api/health</code></td><td>Состояние сервиса и модулей (число записей, дата обновления базы).</td></tr>
+    <tr><td><span class="method">POST</span> <code>/api/admin/refresh</code></td><td>Ручное обновление базы Минцифры (требует токен; по умолчанию отключено).</td></tr>
+    <tr><td><span class="method">GET</span> <code>/swagger</code></td><td>Интерактивная OpenAPI-документация.</td></tr>
+</table>
+
+<h3>О данных</h3>
+<p class="note">
+    База операторов и регионов формируется из открытых данных Минцифры
+    (<a href="https://opendata.digital.gov.ru/registry/numeric/downloads/" target="_blank" rel="noopener">opendata.digital.gov.ru</a>)
+    и обновляется автоматически. Значения региона, города и часового пояса — приближённые:
+    формат ответа совпадает с DaData, но значения берутся из реестра Минцифры и могут немного отличаться.
+</p>

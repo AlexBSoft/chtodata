@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- SEO -->
+    <title>Что?Data — открытый сервис обработки данных (альтернатива DaData)</title>
+    <meta name="description" content="Что?Data — открытый бесплатный сервис обработки данных для рунета. Очистка и разбор телефонных номеров через API: тип, оператор, регион, город и часовой пояс из реестра Минцифры. Альтернатива DaData, которую можно развернуть у себя.">
+    <meta name="keywords" content="обработка данных, очистка телефонов, парсинг телефонных номеров, определение оператора, регион по номеру телефона, dadata альтернатива, API телефоны, Минцифры, phonenumbers, ChtoData">
+    <meta name="author" content="ChtoData">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0f1115">
+    <link rel="canonical" href="{{ site_url }}/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Что?Data">
+    <meta property="og:title" content="Что?Data — открытый сервис обработки данных">
+    <meta property="og:description" content="Очистка и разбор телефонных номеров через API: тип, оператор, регион, город, часовой пояс. Открытая альтернатива DaData, которую можно развернуть у себя.">
+    <meta property="og:url" content="{{ site_url }}/">
+    <meta property="og:image" content="{{ site_url }}/static/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Что?Data — обработка данных для рунета">
+    <meta property="og:locale" content="ru_RU">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Что?Data — открытый сервис обработки данных">
+    <meta name="twitter:description" content="Очистка и разбор телефонных номеров через API. Открытая альтернатива DaData.">
+    <meta name="twitter:image" content="{{ site_url }}/static/og-image.png">
+
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link rel="stylesheet" href="/static/style.css">
+
+    <!-- Структурированные данные (Schema.org) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebAPI",
+        "name": "Что?Data",
+        "description": "Открытый бесплатный сервис обработки данных для рунета: очистка и разбор телефонных номеров.",
+        "url": "{{ site_url }}/",
+        "documentation": "{{ site_url }}/docs",
+        "provider": {"@type": "Organization", "name": "ChtoData"},
+        "license": "https://opensource.org/licenses/MIT",
+        "isAccessibleForFree": true
+    }
+    </script>
+</head>
+<body>
+<div class="wrap">
+
+    <header class="hero">
+        <div class="logo"><span class="q">Что?</span><span class="d">Data</span></div>
+        <div class="tagline">Открытый бесплатный сервис обработки данных для рунета.</div>
+        <div class="badges">
+            <span class="badge"><a href="/swagger">Swagger UI →</a></span>
+        </div>
+    </header>
+
+    <p>
+        <b>Что?Data</b> — набор API и инструментов для обработки данных. Каждый инструмент
+        оформлен как отдельный модуль; ниже перечислены доступные. Сейчас основной модуль —
+        очистка телефонов.
+    </p>
+
+    <h2>Модули</h2>
+    <div class="modules-list">
+        {% for m in modules %}
+        <div class="card module-card">
+            <h3>{{ m.title }}</h3>
+            <p>{{ m.description }}</p>
+            {% if m.path %}<span class="method">POST</span><span class="path">{{ m.path }}</span>{% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% for m in modules %}
+        {% if m.doc_template %}{% include m.doc_template %}{% endif %}
+    {% endfor %}
+
+    <footer>
+        Что?Data · открытый исходный код под лицензией MIT · FastAPI + phonenumbers (libphonenumber).
+    </footer>
+
+</div>
+</body>
+</html>
