@@ -100,6 +100,20 @@ def test_kazakhstan_plus7_is_not_russia():
     assert r["qc"] == 0
 
 
+def test_cis_number_without_plus():
+    # Номер из СНГ в E.164 без «+» должен распознаваться, а не считаться битым РФ-номером.
+    r = parse_phone("996551606799").model_dump()  # Киргизия
+    assert r["qc"] == 0
+    assert r["country_code"] == "996"
+    assert r["country_iso"] == "kg"
+    assert r["phone"] == "+996 551 606 799"
+
+
+def test_bare_garbage_digits_is_qc1():
+    # Длинная строка цифр, не являющаяся валидным номером, остаётся нераспознанной.
+    assert parse_phone("123456789012").model_dump()["qc"] == 1
+
+
 def test_garbage_is_qc1():
     for src in ["не телефон", "", "   ", "abcd"]:
         r = parse_phone(src).model_dump()

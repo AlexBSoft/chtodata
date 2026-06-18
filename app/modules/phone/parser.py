@@ -90,6 +90,27 @@ def _match_in_text(text: str) -> tuple[phonenumbers.PhoneNumber | None, str]:
     return None, ""
 
 
+# Строка из одних цифр и телефонной пунктуации (без букв) — кандидат на «голый» номер.
+_BARE_NUMBER_RE = re.compile(r"^[\s()\-.\d]+$")
+
+
+def _try_parse_e164(text: str) -> phonenumbers.PhoneNumber | None:
+    """Запасной разбор для международного номера, введённого без «+».
+    Вызывается только после неудачи основного разбора, поэтому российские номера сюда
+    не попадают.
+    """
+    if not _BARE_NUMBER_RE.match(text):
+        return None
+    digits = re.sub(r"\D", "", text)
+    if not (11 <= len(digits) <= 15):
+        return None
+    try:
+        num = phonenumbers.parse("+" + digits, None)
+    except phonenumbers.NumberParseException:
+        return None
+    return num if phonenumbers.is_valid_number(num) else None
+
+
 def parse_phone(source: str) -> PhoneResult:
     """Главная точка входа: строка -> PhoneResult."""
     raw = (source or "").strip()
@@ -100,12 +121,15 @@ def parse_phone(source: str) -> PhoneResult:
 
     num = _try_parse(cleaned)
     if num is None:
-        # Запасной путь: вычленить номер из «грязного» текста (слова вокруг номера).
+        # Запасной путь 1: вычленить номер из «грязного» текста (слова вокруг номера).
         num, matched_ext = _match_in_text(cleaned)
-        if num is None:
-            return _empty(source, qc=1)
         if not extension and matched_ext:
             extension = matched_ext
+    if num is None:
+        # Запасной путь 2: международный номер в E.164 без «+» (напр. номер из СНГ).
+        num = _try_parse_e164(cleaned)
+    if num is None:
+        return _empty(source, qc=1)
 
     nsn = phonenumbers.national_significant_number(num)
     valid = phonenumbers.is_valid_number(num)
